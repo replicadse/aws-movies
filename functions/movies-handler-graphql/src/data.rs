@@ -35,7 +35,6 @@ pub async fn read_item(id: &str) -> Result<Movie, Error> {
         },
         ..Default::default()
     };
-    info!("{:?}", input);
     match client.get_item(input).await {
         Ok(output) => {
             let item = output.item.unwrap();

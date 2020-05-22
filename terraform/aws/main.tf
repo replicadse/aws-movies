@@ -1,26 +1,5 @@
-provider "aws" {
-  version = "~> 2.8"
-  region = "eu-central-1"
-}
-
-terraform {
-  backend "s3" {
-    bucket = "776479404968-terraform"
-    #dynamodb_table = "776479404968-terraform-lock"
-    encrypt = true
-  }
-}
-
-variable "project" {
-  type = string
-}
-
-variable "stage" {
-  type = string
-}
-
-resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+resource "aws_iam_role" "movies-handler-graphql-iam" {
+  name = "movies-handler-graphql-iam"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -39,11 +18,11 @@ EOF
 }
 
 resource "aws_lambda_function" "movies-handler-graphql" {
-  filename      = "../../target/movies-handler-graphql.zip"
-  function_name = "${var.project}--${var.stage}--movies-handler-grapqhl"
-  role          = aws_iam_role.iam_for_lambda.arn
+  filename      = "../../functions/movies-handler-graphql/target/bootstrap.zip"
+  function_name = "movies-handler-grapqhl"
+  role          = aws_iam_role.movies-handler-graphql-iam.arn
   handler       = "bootstrap"
-  source_code_hash = filebase64sha256("../../target/movies-handler-graphql.zip")
+  source_code_hash = filebase64sha256("../../functions/movies-handler-graphql/target/bootstrap.zip")
   runtime = "provided"
 
   environment {
@@ -101,6 +80,6 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "dynamodb" {
-  role       = aws_iam_role.iam_for_lambda.name
+  role       = aws_iam_role.movies-handler-graphql-iam.name
   policy_arn = aws_iam_policy.dynamodb.arn
 }

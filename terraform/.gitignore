@@ -1,0 +1,3 @@
+.terraform
+*.generated.tf
+env_vars.sh
