@@ -1,5 +1,16 @@
-use juniper::{FieldResult, FieldError, RootNode, GraphQLInputObject};
-use chrono::{DateTime, Utc};
+use chrono::{prelude::*, DateTime, Utc};
+use juniper::{FieldResult, GraphQLInputObject, RootNode};
+use serde::{Deserialize, Serialize};
+
+error_chain! {
+    types {
+        Error, ErrorKind, ResultExt, Result;
+    }
+
+    links {
+        Data(crate::data::Error, crate::data::ErrorKind);
+    }
+}
 
 pub struct QueryRoot;
 pub struct MutationRoot;
@@ -9,57 +20,76 @@ pub fn create_schema() -> Schema {
     Schema::new(QueryRoot {}, MutationRoot {})
 }
 
-#[derive(Debug, Clone, GraphQLInputObject)]
-struct PostMovieRequest {
+#[derive(Debug, Clone, Serialize, Deserialize, GraphQLInputObject)]
+#[serde(rename_all = "snake_case")]
+struct PutMovieRequestRole {
+    #[graphql(name = "actor_last_name")]
+    actor_last_name: String,
+    #[graphql(name = "actor_first_name")]
+    actor_first_name: String,
+    #[graphql(name = "character_names")]
+    character_names: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, GraphQLInputObject)]
+#[serde(rename_all = "snake_case")]
+struct PutMovieRequest {
+    #[graphql(name = "title")]
     title: String,
-    watched: Option<DateTime<Utc>>,
-    actors: Option<Vec<String>>,
+    #[graphql(name = "imdb_id")]
+    imdb_id: Option<String>,
+    #[graphql(name = "published_at")]
+    published_at: DateTime<Utc>,
+    #[graphql(name = "roles")]
+    roles: Vec<PutMovieRequestRole>,
 }
 
 #[juniper::object]
 impl QueryRoot {
     #[graphql(name = "get_movie")]
-    fn get_human(id: String) -> FieldResult<crate::data::Movie> {
-        let mut runtime = tokio::runtime::Runtime::new().unwrap();
-        match runtime.block_on(crate::data::read_item(&id)) {
+    fn get_movie(title: String, published: i32) -> FieldResult<crate::data::Movie> {
+        let published_dt = DateTime::from_utc(
+            NaiveDate::from_ymd(published, 1, 1).and_time(NaiveTime::from_hms(0, 0, 0)),
+            Utc,
+        );
+        let mut runtime = tokio::runtime::Runtime::new()?;
+        match runtime.block_on(crate::data::read_movie(&title, &published_dt)) {
             Ok(m) => Ok(m),
-            Err(e) => Err(FieldError::from(e))
-        }
-    }
-
-    #[graphql(name = "list_movies")]
-    fn get_human() -> FieldResult<Vec<String>> {
-        let mut runtime = tokio::runtime::Runtime::new().unwrap();
-        match runtime.block_on(crate::data::scan_item_ids()) {
-            Ok(m) => Ok(m),
-            Err(e) => Err(FieldError::from(e))
+            Err(e) => Err(e.to_string().into()),
         }
     }
 }
 
 #[juniper::object]
 impl MutationRoot {
-    #[graphql(name = "post_movie")]
-    fn post_movie(request: PostMovieRequest) -> FieldResult<String> {
+    #[graphql(name = "put_movie")]
+    fn put_movie(request: PutMovieRequest) -> FieldResult<bool> {
         let movie = crate::data::Movie {
-            id: uuid::Uuid::new_v4().to_string(),
-            title: request.title,
-            watched: request.watched,
-            actors: request.actors.unwrap_or(Vec::new()),
+            meta: crate::data::MovieMetadata {
+                title: request.title,
+                imdb_id: request.imdb_id,
+                published_at: request.published_at,
+            },
+            roles: request
+                .roles
+                .iter()
+                .map(|r| crate::data::Role {
+                    actor: crate::data::Actor {
+                        first_name: r.actor_first_name.clone(),
+                        last_name: r.actor_last_name.clone(),
+                    },
+                    characters: r
+                        .character_names
+                        .iter()
+                        .map(|x| crate::data::Character { name: x.to_owned() })
+                        .collect(),
+                })
+                .collect(),
         };
-        let mut runtime = tokio::runtime::Runtime::new().unwrap();
-        match runtime.block_on(crate::data::store_item(movie)) {
-            Ok(m) => Ok(m),
-            Err(e) => Err(FieldError::from(e))
-        }
-    }
-
-    #[graphql(name = "delete_movie")]
-    fn delete_movie(id: String) -> FieldResult<bool> {
-        let mut runtime = tokio::runtime::Runtime::new().unwrap();
-        match runtime.block_on(crate::data::delete_item(&id)) {
+        let mut runtime = tokio::runtime::Runtime::new()?;
+        match runtime.block_on(crate::data::store_movie(movie)) {
             Ok(_) => Ok(true),
-            Err(e) => Err(FieldError::from(e))
+            Err(e) => Err(e.to_string().into()),
         }
     }
 }

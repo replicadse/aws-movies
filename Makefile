@@ -6,16 +6,18 @@ build:
 deploy:
 	cd terraform/aws && \
 	terragrunt apply-all \
-		--auto-approve \
 		--terragrunt-non-interactive
 
 .PHONY: destroy
 destroy:
 	cd terraform/aws && \
 	terragrunt destroy-all \
-		--auto-approve \
 		--terragrunt-non-interactive
 
 .PHONY: test
 test:
+	cd functions/movies-handler-graphql && make test
+
+.PHONY: test-aws
+test-aws:
 	python ./scripts/test.py

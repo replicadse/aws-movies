@@ -11,7 +11,7 @@ remote_state {
     key            = "${path_relative_to_include()}/terraform.tfstate"
     region         = "${get_env("TF_VAR_region")}"
     encrypt        = true
-    dynamodb_table = "${get_env("TF_VAR_account")}--${get_env("TF_VAR_project")}--${get_env("TF_VAR_region")}--${get_env("TF_VAR_stage")}--terraform-lock"
+    // dynamodb_table = "${get_env("TF_VAR_account")}--${get_env("TF_VAR_project")}--${get_env("TF_VAR_region")}--${get_env("TF_VAR_stage")}--terraform-lock"
   }
 }
 

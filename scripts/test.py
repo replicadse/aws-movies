@@ -20,32 +20,90 @@ def invoke(payload, *, client = DEFAULT_CLIENT, function = DEFAULT_FUNCTION):
 response = invoke({
     "query": """mutation 
     { 
-        post_movie(request: 
+        put_movie(request: 
             { 
-                title: \"21 Jump Street\",
-                watched: \"2020-01-01T12:00:00.0000Z\",
-                actors: [
-                    "Channing Tatum",
-                    "Jonah Mills"
+                title: \"The Irishman\",
+                imdb_id: \"tt1302006\",
+                published_at: \"2019-09-27T00:00:00Z\",
+                roles: [
+                    {
+                        actor_last_name: \"Deniro\",
+                        actor_first_name: \"Robert\",
+                        character_names: [\"Frank Sheeran\"],
+                    },
+                    {
+                        actor_last_name: \"Pacino\",
+                        actor_first_name: \"Al\",
+                        character_names: [\"Jimmy Hoffa\"],
+                    }
                 ]
             } 
         ) 
     }"""
 })
-movie_id = response["data"]["post_movie"]
 pprint(response)
 
 response = invoke({
-    "query": "query { get_movie(id: \"" + movie_id + "\") { id, title, watched, actors } }"
+    "query": """mutation 
+    { 
+        put_movie(request: 
+            { 
+                title: \"21 Jump Street\",
+                imdb_id: \"tt1232829\",
+                published_at: \"2012-03-16T00:00:00Z\",
+                roles: [
+                    {
+                        actor_last_name: \"Tatum\",
+                        actor_first_name: \"Channing\",
+                        character_names: [\"Jenko\"],
+                    },
+                    {
+                        actor_last_name: \"Hill\",
+                        actor_first_name: \"Jonah\",
+                        character_names: [\"Schmidt\"],
+                    },
+                    {
+                        actor_last_name: \"Larson\",
+                        actor_first_name: \"Brie\",
+                        character_names: [\"Molly Tracey\"],
+                    }
+                ]
+            } 
+        ) 
+    }"""
 })
 pprint(response)
 
 response = invoke({
-    "query": "query { list_movies }"
+    "query": """mutation 
+    { 
+        put_movie(request: 
+            { 
+                title: \"Heat\",
+                imdb_id: \"tt0113277\",
+                published_at: \"1995-12-15T00:00:00Z\",
+                roles: [
+                    {
+                        actor_last_name: \"Deniro\",
+                        actor_first_name: \"Robert\",
+                        character_names: [\"Neil McCauley\"],
+                    },
+                    {
+                        actor_last_name: \"Pacino\",
+                        actor_first_name: \"Al\",
+                        character_names: [\"Lt. Vincent Hanna\"],
+                    }
+                ]
+            } 
+        ) 
+    }"""
 })
 pprint(response)
 
 response = invoke({
-    "query": "mutation { delete_movie(id: \"" + movie_id + "\") }"
+    "query": """query 
+    {
+        get_movie(title: \"Heat\", published: 1995) { meta { title, published_at }, roles { actor { last_name, first_name }, characters { name } } }
+    }"""
 })
 pprint(response)

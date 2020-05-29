@@ -19,7 +19,7 @@ build:
 	zip -j target/bootstrap.zip ./target/x86_64-unknown-linux-musl/release/bootstrap
 
 test:
-	cargo test -- --nocapture
+	RUST_BACKTRACE=1 cargo test -- --nocapture
 
 cover-flags := CARGO_INCREMENTAL=0 RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
 cover:
