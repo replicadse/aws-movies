@@ -8,6 +8,7 @@ extern crate error_chain;
 #[macro_use]
 mod macros;
 mod data;
+mod dynamo;
 mod option;
 mod schema;
 use crate::schema::create_schema;

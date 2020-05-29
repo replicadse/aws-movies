@@ -86,12 +86,16 @@ response = invoke({
                     {
                         actor_last_name: \"Deniro\",
                         actor_first_name: \"Robert\",
-                        character_names: [\"Neil McCauley\"],
+                        character_names: [
+                            \"Neil McCauley\"
+                        ],
                     },
                     {
                         actor_last_name: \"Pacino\",
                         actor_first_name: \"Al\",
-                        character_names: [\"Lt. Vincent Hanna\"],
+                        character_names: [
+                            \"Lt. Vincent Hanna\"
+                        ],
                     }
                 ]
             } 
@@ -103,7 +107,21 @@ pprint(response)
 response = invoke({
     "query": """query 
     {
-        get_movie(title: \"Heat\", published: 1995) { meta { title, published_at }, roles { actor { last_name, first_name }, characters { name } } }
+        get_movie(title: \"21 Jump Street\", published: 2012) { 
+            meta { 
+                title, 
+                published_at 
+            }, 
+            roles { 
+                actor { 
+                    last_name, 
+                    first_name 
+                }, 
+                characters { 
+                    name 
+                } 
+            } 
+        }
     }"""
 })
 pprint(response)
