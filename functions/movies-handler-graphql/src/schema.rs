@@ -53,7 +53,7 @@ impl QueryRoot {
             Utc,
         );
         let mut runtime = tokio::runtime::Runtime::new()?;
-        match runtime.block_on(crate::data::read_movie(&title, &published_dt)) {
+        match runtime.block_on(crate::storage::read_movie(&title, &published_dt)) {
             Ok(m) => Ok(m),
             Err(e) => Err(e.to_string().into()),
         }
@@ -87,7 +87,7 @@ impl MutationRoot {
                 .collect(),
         };
         let mut runtime = tokio::runtime::Runtime::new()?;
-        match runtime.block_on(crate::data::store_movie(movie)) {
+        match runtime.block_on(crate::storage::store_movie(movie)) {
             Ok(_) => Ok(true),
             Err(e) => Err(e.to_string().into()),
         }
