@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda" {
-  name = "lambda-role"
+  name = "aws-movies--lambda-role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -17,8 +17,8 @@ resource "aws_iam_role" "lambda" {
 EOF
 }
 
-resource "aws_iam_policy" "lambda-logging" {
-  name        = "lambda-logging"
+resource "aws_iam_policy" "aws-movies--lambda-logging" {
+  name        = "aws-movies--lambda-logging"
   path        = "/"
   description = "IAM policy for logging from a lambda"
 
@@ -40,19 +40,19 @@ resource "aws_iam_policy" "lambda-logging" {
 EOF
 }
 
-resource "aws_cloudwatch_log_group" "movies-handler-graphql-log" {
-  name              = "/aws/lambda/${aws_lambda_function.movies-handler-graphql.function_name}"
+resource "aws_cloudwatch_log_group" "aws-movies--movies-handler-graphql-log" {
+  name              = "/aws/lambda/${aws_lambda_function.aws-movies--movies-handler-graphql.function_name}"
   retention_in_days = 7
 }
 
 resource "aws_iam_role_policy_attachment" "lambda-logs" {
   role       = aws_iam_role.lambda.name
-  policy_arn = aws_iam_policy.lambda-logging.arn
+  policy_arn = aws_iam_policy.aws-movies--lambda-logging.arn
 }
 
-resource "aws_lambda_function" "movies-handler-graphql" {
+resource "aws_lambda_function" "aws-movies--movies-handler-graphql" {
   filename      = "../../functions/movies-handler-graphql/target/bootstrap.zip"
-  function_name = "movies-handler-grapqhl"
+  function_name = "aws-movies--movies-handler-graphql"
   role          = aws_iam_role.lambda.arn
   handler       = "bootstrap"
   source_code_hash = filebase64sha256("../../functions/movies-handler-graphql/target/bootstrap.zip")
@@ -60,13 +60,13 @@ resource "aws_lambda_function" "movies-handler-graphql" {
 
   environment {
     variables = {
-      TABLE_NAME = "movies"
+      TABLE_NAME = "aws-movies--movies"
     }
   }
 }
 
 resource "aws_dynamodb_table" "movies-table" {
-  name           = "movies"
+  name           = "aws-movies--movies"
   billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "pk"
   range_key      = "sk"
