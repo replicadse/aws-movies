@@ -1,0 +1,36 @@
+[package]
+name = "movies-handler-graphql"
+version = "0.0.0"
+authors = ["Heiko Alexander Weber <heiko.a.weber@gmail.com>"]
+autobins = false
+edition = "2018"
+license = "MIT"
+description = ""
+readme = "docs/README.md"
+homepage = "https://replicadse.github.io/aws-movies"
+repository = "https://github.com/replicadse/aws-movies"
+keywords = ["aws", "lambda"]
+categories = []
+
+[dependencies]
+lambda_runtime = "0.2.1"
+error-chain = "0.12.2"
+uuid = { version = "0.8", features = ["serde", "v4"] }
+serde = "1.0.110"
+serde_json = "1.0.53"
+serde_dynamodb = "0.5.0"
+serde_derive = "1.0.110"
+log = "0.4.8"
+simple_logger = "^1"
+futures = "^0.3.5"
+openssl = { version = "0.10.26", features = ["vendored"] }
+openssl-sys = { version = "0.9.53", features = ["vendored"] }
+tokio = "0.2.21"
+juniper = "0.14.2"
+chrono = "0.4.11"
+rusoto_core = {version = "0.43.0", default_features = false, features=["native-tls"]}
+rusoto_dynamodb = {version = "0.43.0", default_features = false, features=["native-tls"]}
+
+[[bin]]
+name = "bootstrap"
+path = "src/main.rs"
