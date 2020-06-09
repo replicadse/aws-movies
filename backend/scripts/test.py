@@ -3,7 +3,7 @@ from pprint import pprint
 import json
 
 DEFAULT_CLIENT = boto3.client('lambda')
-DEFAULT_FUNCTION = "movies-handler-grapqhl"
+DEFAULT_FUNCTION = "aws-movies--movies-handler-graphql"
 
 def invoke(payload, *, client = DEFAULT_CLIENT, function = DEFAULT_FUNCTION):
     if payload is not None:
