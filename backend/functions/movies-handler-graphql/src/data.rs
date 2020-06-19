@@ -1,5 +1,5 @@
-use juniper::GraphQLObject;
 use chrono::{DateTime, Utc};
+use juniper::GraphQLObject;
 use serde::{Deserialize, Serialize};
 
 error_chain! {

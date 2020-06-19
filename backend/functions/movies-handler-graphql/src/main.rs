@@ -8,10 +8,10 @@ extern crate error_chain;
 #[macro_use]
 mod macros;
 mod data;
-mod storage;
 mod dynamo;
 mod option;
 mod schema;
+mod storage;
 use crate::schema::create_schema;
 
 use juniper::http::GraphQLRequest;

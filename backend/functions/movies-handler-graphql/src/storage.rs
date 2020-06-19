@@ -1,11 +1,11 @@
-use std::str::FromStr;
+use crate::data::{Actor, Character, Movie, MovieMetadata, Role};
 use crate::dynamo::*;
 use chrono::{DateTime, Datelike, Utc};
 use rusoto_core::Region;
 use rusoto_dynamodb::{
     AttributeValue, DynamoDb, DynamoDbClient, GetItemInput, PutItemInput, QueryInput,
 };
-use crate::data::{Movie, MovieMetadata, Actor, Role, Character};
+use std::str::FromStr;
 
 async fn get_region() -> Result<Region> {
     match Region::from_str(std::env::var("AWS_REGION")?.as_ref()) {
